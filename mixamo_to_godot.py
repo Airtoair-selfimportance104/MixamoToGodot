@@ -13,6 +13,7 @@ import os
 import re
 from bpy.props import StringProperty, PointerProperty
 from bpy.types import PropertyGroup, Operator, Panel
+from mathutils import Quaternion, Euler, Vector
 
 
 def to_pascal_case(name):
@@ -96,6 +97,96 @@ def create_fcurve(action, armature, data_path, index, group_name=""):
             pass
 
     return None
+
+
+def retarget_action(action, src_armature, tgt_armature):
+    """Correct fcurves so action authored for src_armature works on tgt_armature."""
+    fcurves = get_fcurves(action)
+    if fcurves is None:
+        return
+
+    for src_bone in src_armature.data.bones:
+        tgt_bone = tgt_armature.data.bones.get(src_bone.name)
+        if tgt_bone is None:
+            continue
+
+        src_m = src_bone.matrix_local.copy()
+        tgt_m = tgt_bone.matrix_local.copy()
+        if src_bone.parent:
+            src_m = src_bone.parent.matrix_local.inverted() @ src_m
+        if tgt_bone.parent:
+            tgt_m = tgt_bone.parent.matrix_local.inverted() @ tgt_m
+
+        src_q = src_m.to_quaternion()
+        tgt_q = tgt_m.to_quaternion()
+        if src_q.rotation_difference(tgt_q).angle < 0.001:
+            continue
+
+        corr = tgt_q.inverted() @ src_q
+
+        # Quaternion rotation
+        qpath = f'pose.bones["{src_bone.name}"].rotation_quaternion'
+        qfc = {fc.array_index: fc for fc in fcurves if fc.data_path == qpath}
+        if len(qfc) == 4:
+            for i in range(len(qfc[0].keyframe_points)):
+                q = Quaternion((
+                    qfc[0].keyframe_points[i].co.y,
+                    qfc[1].keyframe_points[i].co.y,
+                    qfc[2].keyframe_points[i].co.y,
+                    qfc[3].keyframe_points[i].co.y,
+                ))
+                q = corr @ q
+                qfc[0].keyframe_points[i].co.y = q.w
+                qfc[1].keyframe_points[i].co.y = q.x
+                qfc[2].keyframe_points[i].co.y = q.y
+                qfc[3].keyframe_points[i].co.y = q.z
+            for fc in qfc.values():
+                for kp in fc.keyframe_points:
+                    kp.handle_left_type = 'AUTO_CLAMPED'
+                    kp.handle_right_type = 'AUTO_CLAMPED'
+                fc.update()
+
+        # Euler rotation
+        epath = f'pose.bones["{src_bone.name}"].rotation_euler'
+        efc = {fc.array_index: fc for fc in fcurves if fc.data_path == epath}
+        if len(efc) == 3:
+            for i in range(len(efc[0].keyframe_points)):
+                e = Euler((
+                    efc[0].keyframe_points[i].co.y,
+                    efc[1].keyframe_points[i].co.y,
+                    efc[2].keyframe_points[i].co.y,
+                ))
+                q = corr @ e.to_quaternion()
+                ne = q.to_euler('XYZ')
+                efc[0].keyframe_points[i].co.y = ne.x
+                efc[1].keyframe_points[i].co.y = ne.y
+                efc[2].keyframe_points[i].co.y = ne.z
+            for fc in efc.values():
+                for kp in fc.keyframe_points:
+                    kp.handle_left_type = 'AUTO_CLAMPED'
+                    kp.handle_right_type = 'AUTO_CLAMPED'
+                fc.update()
+
+        # Location
+        lpath = f'pose.bones["{src_bone.name}"].location'
+        lfc = {fc.array_index: fc for fc in fcurves if fc.data_path == lpath}
+        if len(lfc) == 3:
+            cm = corr.to_matrix()
+            for i in range(len(lfc[0].keyframe_points)):
+                v = Vector((
+                    lfc[0].keyframe_points[i].co.y,
+                    lfc[1].keyframe_points[i].co.y,
+                    lfc[2].keyframe_points[i].co.y,
+                ))
+                v = cm @ v
+                lfc[0].keyframe_points[i].co.y = v.x
+                lfc[1].keyframe_points[i].co.y = v.y
+                lfc[2].keyframe_points[i].co.y = v.z
+            for fc in lfc.values():
+                for kp in fc.keyframe_points:
+                    kp.handle_left_type = 'AUTO_CLAMPED'
+                    kp.handle_right_type = 'AUTO_CLAMPED'
+                fc.update()
 
 
 class MixamoProperties(PropertyGroup):
@@ -282,6 +373,13 @@ class MIXAMO_OT_merge_clean(Operator):
         if main_armature is None:
             self.report({'ERROR'}, "No armature with mesh found")
             return {'CANCELLED'}
+
+        # Retarget actions from animation armatures to main armature
+        for obj in bpy.data.objects:
+            if obj.type != 'ARMATURE' or obj == main_armature:
+                continue
+            if obj.animation_data and obj.animation_data.action:
+                retarget_action(obj.animation_data.action, obj, main_armature)
 
         to_delete = []
         for obj in bpy.data.objects:
